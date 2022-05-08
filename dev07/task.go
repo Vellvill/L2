@@ -19,16 +19,23 @@ func main() {
 }
 
 func Or(channels ...<-chan interface{}) <-chan interface{} {
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
 	done := make(chan struct{})
-	for i, ch := range channels {
-		go workerListen(ch, done, i)
+	for _, ch := range channels {
+		go workerListen(ch, done)
 	}
-	for {
-		select {
-		case <-done:
-			return merge(channels)
+	go func() {
+		for {
+			select {
+			case <-done:
+				wg.Done()
+				return
+			}
 		}
-	}
+	}()
+	wg.Wait()
+	return merge(channels)
 }
 
 func workerWriter(ch chan<- interface{}, data []interface{}) {
@@ -38,17 +45,15 @@ func workerWriter(ch chan<- interface{}, data []interface{}) {
 	}
 }
 
-func workerListen(ch <-chan interface{}, done chan struct{}, i int) {
+func workerListen(ch <-chan interface{}, done chan struct{}) {
 	for {
 		select {
+		case <-done:
+			return
 		case _, ok := <-ch:
 			if !ok {
 				done <- struct{}{}
-				fmt.Printf("closing %d ch\n", i)
-				return
 			}
-		case <-done:
-			return
 		}
 	}
 }
