@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 func main() {
@@ -40,8 +41,8 @@ func Or(channels ...<-chan interface{}) <-chan interface{} {
 
 func workerWriter(ch chan<- interface{}, data []interface{}) {
 	defer close(ch)
-	for _, v := range data {
-		ch <- v
+	for i, _ := range data {
+		ch <- data[i]
 	}
 }
 
@@ -54,6 +55,8 @@ func workerListen(ch <-chan interface{}, done chan struct{}) {
 			if !ok {
 				done <- struct{}{}
 			}
+		default:
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
