@@ -2,6 +2,7 @@ package server
 
 import (
 	"dev11/internal/usercases"
+	"net"
 	"net/http"
 )
 
@@ -12,6 +13,11 @@ type Application struct {
 
 func Start(port string, repo usercases.Repository) error {
 
+	listener, err := net.Listen("tcp", port)
+	if err != nil {
+		return err
+	}
+
 	impl := New(repo)
 
 	http.HandleFunc("/create", impl.Create)
@@ -20,7 +26,7 @@ func Start(port string, repo usercases.Repository) error {
 
 	http.HandleFunc("/update", impl.Update)
 
-	return http.ListenAndServe(port, nil)
+	return http.Serve(listener, nil)
 }
 
 func Middleware(handlerFunc http.HandlerFunc) http.HandlerFunc {

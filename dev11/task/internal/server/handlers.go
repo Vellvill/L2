@@ -4,17 +4,16 @@ import (
 	"dev11/internal/usercases"
 	"encoding/json"
 	"net/http"
-	"time"
 )
 
 type Implementation struct {
 	repo usercases.Repository
 }
 
-type Event struct {
-	ID          int       `json:"id"`
-	Date        time.Time `json:"date"`
-	Description string    `json:"description"`
+type Req struct {
+	id          int64 `json:"id"`
+	Date        `json:"date"`
+	Description string `json:"description"`
 }
 
 func New(repo usercases.Repository) Implementation {
@@ -22,10 +21,22 @@ func New(repo usercases.Repository) Implementation {
 }
 
 func (i *Implementation) Create(w http.ResponseWriter, r *http.Request) {
-	var e Event
+
 	err := json.NewDecoder(r.Body).Decode(&e)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+	model, err := i.repo.Create(e.id, e.Description, e.Date)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	res, err := json.Marshal(model)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	status, err := w.Write(res)
+	if err != nil {
+		http.Error(w, err.Error(), status)
 	}
 }
 
