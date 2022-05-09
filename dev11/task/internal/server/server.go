@@ -20,15 +20,11 @@ func Start(port string, repo usercases.Repository) error {
 
 	impl := New(repo)
 
-	http.HandleFunc("/create", impl.Create)
+	http.HandleFunc("/create", impl.Middleware(impl.Create))
 
-	http.HandleFunc("/delete", impl.Delete)
+	http.HandleFunc("/delete", impl.Middleware(impl.Delete))
 
-	http.HandleFunc("/update", impl.Update)
+	http.HandleFunc("/update", impl.Middleware(impl.Update))
 
 	return http.Serve(listener, nil)
-}
-
-func Middleware(handlerFunc http.HandlerFunc) http.HandlerFunc {
-	return handlerFunc
 }

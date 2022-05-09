@@ -12,14 +12,12 @@ type User struct {
 }
 
 type Event struct {
-	Time       time.Time `json:"date"`
-	Description string    `json:"description"`
+	Time time.Time `json:"date"`
 }
 
-func NewEvent(time time.Time, desc string) *Event {
+func NewEvent(time time.Time) *Event {
 	return &Event{
-		Time:        time,
-		Description: desc,
+		Time: time,
 	}
 }
 
