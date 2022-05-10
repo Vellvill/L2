@@ -26,5 +26,7 @@ func Start(port string, repo usercases.Repository) error {
 
 	http.HandleFunc("/update", impl.Middleware(impl.Update))
 
+	http.HandleFunc("/today", impl.Middleware(impl.Update))
+
 	return http.Serve(listener, nil)
 }

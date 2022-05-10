@@ -1,27 +1,28 @@
 package model
 
 import (
-	"sync/atomic"
+	"fmt"
 	"time"
 )
 
-var id int64
-
-type User struct {
-	ID int64 `json:"user_id"`
-}
-
 type Event struct {
-	Time time.Time `json:"date"`
+	ID   int64     `json:"id"`
+	Date time.Time `json:"date"`
 }
 
-func NewEvent(time time.Time) *Event {
-	return &Event{
-		Time: time,
+func NewEvent(id int64, time time.Time) (*Event, error) {
+	e := &Event{
+		ID:   id,
+		Date: time,
 	}
+
+	return e, e.validate()
 }
 
-func NewUser() *User {
-	defer atomic.AddInt64(&id, 1)
-	return &User{ID: id}
+func (e *Event) validate() error {
+	if e.Date.Before(time.Now()) {
+		return fmt.Errorf("Creating date before now\n")
+	} else {
+		return nil
+	}
 }
