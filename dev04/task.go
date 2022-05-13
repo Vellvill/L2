@@ -3,11 +3,11 @@ package main
 import "fmt"
 
 func main() {
-	words := []string{"тяпка", "пятак", "пятка", "листок", "слиток", "столик"}
-	fmt.Println(find(words))
+	words := []string{"тяпка", "пятак", "пятка", "листок", "слиток", "столик", "прикол"}
+	fmt.Println(Find(words))
 }
 
-func find(words []string) map[string][]string {
+func Find(words []string) map[string][]string {
 	if len(words) < 2 {
 		return nil
 	}

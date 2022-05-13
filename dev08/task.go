@@ -45,11 +45,9 @@ func execIn(input string) error {
 		return er
 	case "echo":
 		for i := 1; i < len(args); i++ {
-			_, err := fmt.Printf("%v\n", args[i])
-			if err != nil {
-				return err
-			}
+			fmt.Println(args[i])
 		}
+		return nil
 	}
 
 	cmd := exec.Command(args[0], args[1:]...)
