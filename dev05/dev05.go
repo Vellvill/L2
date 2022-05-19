@@ -51,15 +51,36 @@ func main() {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	strs, matchesIdx := make([][]string, 0), make([]int, 0)
+	strs, matchesIdx, out := make([][]string, 0), make([]int, 0), ""
 	sc := bufio.NewScanner(file)
-	var index int
+	var counter int
+	pattern = "ege"
 	for sc.Scan() {
-		index++
 		strs = append(strs, strings.Split(sc.Text(), " "))
 		if strings.Contains(sc.Text(), pattern) {
-			matchesIdx = append(matchesIdx, index)
+			matchesIdx = append(matchesIdx, counter)
+
+			if MyFlags.n {
+				out = fmt.Sprintf(out + fmt.Sprintf("%d ", counter))
+				counter++
+				continue
+			} else {
+				counter++
+				continue
+			}
 		}
+		counter++
 	}
-	fmt.Println(strs)
+	if len(matchesIdx) == 0 {
+		return
+	}
+	grep(strs, matchesIdx, out)
+}
+
+func grep(strs [][]string, matchesIdx []int, out string) {
+	fmt.Println(matchesIdx)
+	for _, v := range matchesIdx {
+		fmt.Println(strs[v])
+	}
+	fmt.Println(out)
 }
