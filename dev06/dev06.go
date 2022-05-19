@@ -24,20 +24,19 @@ var (
 	s bool
 )
 
-type column struct {
-	num int
-	str string
-}
-
 func init() {
 	flag.IntVar(&f, "f", 0, "выбрать поля (колонки)")
-	flag.StringVar(&d, "d", "", "делиметр")
+	flag.StringVar(&d, "d", "#", "делиметр")
 	flag.BoolVar(&s, "s", false, "только строки с разделителем")
 }
 
 func main() {
 	flag.Parse()
 	f = 1
+	d = "3"
+	if f <= 0 {
+		log.Fatal("f must be >0")
+	}
 	p, _ := os.Getwd()
 	file, err := os.Open(fmt.Sprintf("%s/dev06/test.txt", p))
 	if err != nil {
@@ -66,5 +65,8 @@ func cut(str string) string {
 		return ""
 	}
 	splitted := strings.Split(str, d)
+	if len(splitted) < f {
+		return str
+	}
 	return splitted[f-1]
 }
