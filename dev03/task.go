@@ -31,8 +31,8 @@ type str struct {
 }
 
 func init() {
-	flag.BoolVar(&n, "", false, "")
-	flag.BoolVar(&r, "n", false, "")
+	flag.BoolVar(&n, "n", false, "")
+	flag.BoolVar(&r, "r", false, "")
 	flag.BoolVar(&u, "u", false, "")
 	flag.IntVar(&k, "k", 0, "")
 	flag.StringVar(&path, "path", "./tests/test.txt", "")
@@ -40,6 +40,8 @@ func init() {
 
 func main() {
 	flag.Parse()
+	r = true
+	n = true
 	curdir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +58,7 @@ func main() {
 		defer func(f *os.File) {
 			err := f.Close()
 			if err != nil {
-				fmt.Printf("Error closing fiel: %s", err)
+				fmt.Printf("Error closing file: %s", err)
 			}
 		}(f)
 
@@ -109,7 +111,8 @@ func sortIndx(strs [][]string) {
 		indexes = append(indexes, func() int {
 			indx, err := strconv.Atoi(v[k])
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				return 0
 			}
 			return indx
 		}())
