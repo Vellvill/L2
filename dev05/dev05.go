@@ -25,8 +25,8 @@ import (
 )
 
 type myFlags struct {
-	A, B, C, c int
-	i, v, F, n bool
+	A, B, C       int
+	i, v, F, n, c bool
 }
 
 var MyFlags myFlags
@@ -35,7 +35,7 @@ func init() {
 	flag.IntVar(&MyFlags.A, "A", 0, "'after' печатать +N строк после совпадения")
 	flag.IntVar(&MyFlags.B, "B", 0, "'before' печатать +N строк до совпадения")
 	flag.IntVar(&MyFlags.C, "C", 0, "'context' (A+B) печатать ±N строк вокруг совпадения")
-	flag.IntVar(&MyFlags.c, "c", 0, "'count' (количество строк)")
+	flag.BoolVar(&MyFlags.c, "c", false, "'count' (количество строк)")
 	flag.BoolVar(&MyFlags.n, "n", false, "line num, напечатать номер строки")
 	flag.BoolVar(&MyFlags.i, "i", false, "'invert' (вместо совпадения, исключать)")
 	flag.BoolVar(&MyFlags.v, "v", false, "'fixed', точное совпадение со строкой, не паттерн")
@@ -43,31 +43,50 @@ func init() {
 }
 
 func main() {
+
 	flag.Parse()
-	pattern := flag.Arg(0)
+
+	/*pattern := flag.Args()[0]
+	filepath := flag.Args()[1]
+	*/
+
+	pattern := "1999"
+	filepath := "tests/test.txt"
+	MyFlags.C = 500
+
 	dir, _ := os.Getwd()
-	file, err := os.Open(fmt.Sprintf("%s/dev05/tests/test.txt", dir))
+	file, err := os.Open(fmt.Sprintf("%s/dev05/%s", dir, filepath))
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
-	strs, matchesIdx, out := make([][]string, 0), make([]int, 0), ""
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+
+	strs, matchesIdx := make([][]string, 0), make([]int, 0)
+	var out string
+
 	sc := bufio.NewScanner(file)
 	var counter int
-	pattern = "ege"
 	for sc.Scan() {
-		strs = append(strs, strings.Split(sc.Text(), " "))
-		if strings.Contains(sc.Text(), pattern) {
+		line := sc.Text()
+		if MyFlags.i {
+			line = strings.ToLower(line)
+		}
+		strs = append(strs, strings.Split(line, " "))
+		if strings.Contains(line, pattern) {
 			matchesIdx = append(matchesIdx, counter)
 
 			if MyFlags.n {
 				out = fmt.Sprintf(out + fmt.Sprintf("%d ", counter))
 				counter++
 				continue
-			} else {
-				counter++
-				continue
 			}
+			counter++
+			continue
 		}
 		counter++
 	}
@@ -78,9 +97,43 @@ func main() {
 }
 
 func grep(strs [][]string, matchesIdx []int, out string) {
-	fmt.Println(matchesIdx)
+	if MyFlags.A != 0 || MyFlags.B != 0 || MyFlags.C != 0 {
+		grepABC(strs, matchesIdx)
+	}
+	if MyFlags.c {
+		out = fmt.Sprintf(out + fmt.Sprintf(" Number of matches: %d", len(matchesIdx)))
+	}
+
 	for _, v := range matchesIdx {
 		fmt.Println(strs[v])
 	}
-	fmt.Println(out)
+}
+
+func grepABC(strs [][]string, matchesIdx []int) {
+	if MyFlags.A != 0 || MyFlags.B != 0 {
+		for _, v := range matchesIdx {
+			if MyFlags.B != 0 {
+				for i, j := v-1, 0; i >= 0; i, j = i-1, j+1 {
+					if j > MyFlags.B-1 {
+						break
+					}
+					fmt.Println(strs[i])
+				}
+			}
+			if MyFlags.A != 0 {
+				for i, j := v+1, 0; i <= len(strs)-1; i, j = i+1, j+1 {
+					if j > MyFlags.A-1 {
+						break
+					}
+					fmt.Println(strs[i])
+				}
+			}
+		}
+	}
+	if MyFlags.C != 0 {
+		MyFlags.A, MyFlags.B = MyFlags.C, MyFlags.C
+		MyFlags.C = 0
+		grepABC(strs, matchesIdx)
+	}
+	return
 }
