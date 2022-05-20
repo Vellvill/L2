@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 )
 
@@ -15,11 +17,22 @@ func (e myError) Error() string {
 }
 
 func main() {
-	a, err := Unpack("a1")
-	if err != nil {
-		log.Fatal(err)
+	readStdin()
+}
+
+func readStdin() {
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		text, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+		}
+		un, err := Unpack(text)
+		if err != nil {
+			fmt.Println(err)
+		}
+		log.Println(un)
 	}
-	fmt.Println(a)
 }
 
 func Unpack(array string) (string, error) {
