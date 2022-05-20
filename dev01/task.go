@@ -1,12 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"github.com/beevik/ntp"
+	"log"
 	"time"
 )
 
 func main() {
-	NtpTime("0.beevik-ntp.pool.ntp.org")
+	cur, err := NtpTime("0.beevik-ntp.pool.ntp.org")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(cur)
 }
 
 func NtpTime(host string) (string, error) {
