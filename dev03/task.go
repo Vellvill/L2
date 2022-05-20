@@ -31,23 +31,20 @@ type str struct {
 }
 
 func init() {
-	flag.BoolVar(&n, "n", false, "")
-	flag.BoolVar(&r, "r", false, "")
-	flag.BoolVar(&u, "u", false, "")
-	flag.IntVar(&k, "k", 0, "")
-	flag.StringVar(&path, "path", "./tests/test.txt", "")
+	path, _ := os.Getwd()
+	flag.BoolVar(&n, "n", false, "сортировать по числовому значению")
+	flag.BoolVar(&r, "r", false, "сортировать в обратном порядке")
+	flag.BoolVar(&u, "u", false, "не выводить повторяющиеся строки")
+	flag.IntVar(&k, "k", 0, "указание колонки для сортировки (слова в строке могут выступать в качестве колонок, по умолчанию разделитель — пробел)")
+	flag.StringVar(&path, "path", "", "путь к файлу")
 }
 
 func main() {
 	flag.Parse()
-	r = true
-	n = true
-	curdir, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
+	if len(path) == 0 {
+		dir, _ := os.Getwd()
+		path = fmt.Sprintf("%s/dev03/tests/test.txt", dir)
 	}
-	path := fmt.Sprintf("%s/dev03/tests/test.txt", curdir)
-	fmt.Println(path)
 	var in io.Reader
 	if filename := path; filename == "" {
 		fmt.Printf("Не указано имя файла.\n")
