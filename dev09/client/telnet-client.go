@@ -15,7 +15,7 @@ type Telnet struct {
 	deadline int
 	Writer   *bufio.Writer
 	Reader   *bufio.Reader
-	conn     net.Conn
+	Conn     net.Conn
 }
 
 //NewTelnet returns new Telnet client
@@ -31,14 +31,14 @@ func NewTelnet(port, ip string, deadline int) *Telnet {
 
 func (t *Telnet) Dial() (err error) {
 	log.Printf("starting Dial connection to %s\n", t.server)
-	t.conn, err = net.Dial("tcp", t.server)
+	t.Conn, err = net.Dial("tcp", t.server)
 	if err != nil {
 		return err
 	}
 
-	t.Reader = bufio.NewReader(t.conn)
+	t.Reader = bufio.NewReader(t.Conn)
 
-	err = t.conn.SetDeadline(time.Now().Add(time.Duration(t.deadline) * time.Second))
+	err = t.Conn.SetDeadline(time.Now().Add(time.Duration(t.deadline) * time.Second))
 	if err != nil {
 		return err
 	}
