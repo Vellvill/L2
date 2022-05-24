@@ -41,10 +41,10 @@ func (t *TelnetClient) Connect() (err error) {
 		}
 	}()
 
-	return t.goClient()
+	return t.goClientWriter()
 }
 
-func (t *TelnetClient) goClient() (err error) {
+func (t *TelnetClient) goClientWriter() (err error) {
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

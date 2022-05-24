@@ -16,6 +16,7 @@ package main
 import (
 	"L2/dev10/telnet"
 	"flag"
+	"log"
 )
 
 var (
@@ -41,7 +42,11 @@ func newTelnet(client telnet.Telnet) *Telnet {
 
 func main() {
 	flag.Parse()
+	host, port = "localhost", "8080"
 	myTelnetClient := telnet.NewTelnetClient(host, port, timeout)
-	newTelnet(myTelnetClient)
-
+	a := newTelnet(myTelnetClient)
+	err := a.client.Connect()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
