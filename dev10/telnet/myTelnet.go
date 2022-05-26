@@ -90,7 +90,7 @@ func (t *TelnetClient) goClientWriter() (err error) {
 			ctx.Done()
 			return x
 		default:
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(10 * time.Second)
 		}
 	}
 

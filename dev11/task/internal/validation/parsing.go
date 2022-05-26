@@ -13,8 +13,13 @@ func ParseParams(r *http.Request) (int, time.Time, error) {
 		date, ok := r.URL.Query()["date"]
 		if ok {
 			return validateParams(id[0], date[0])
+		} else {
+			idRes, err := strconv.Atoi(id[0])
+			if err != nil {
+				return 0, time.Time{}, err
+			}
+			return idRes, time.Time{}, nil
 		}
-		return 0, time.Time{}, fmt.Errorf("bad request")
 	}
 	return 0, time.Time{}, fmt.Errorf("bad request")
 }
@@ -30,7 +35,7 @@ func validateParams(id string, date string) (int, time.Time, error) {
 		return 0, time.Time{}, err
 	}
 
-	data, err = time.Parse("2006-01-02", date)
+	data, err = time.Parse("2006-01-02T15:04:05", date)
 	if err != nil {
 		return 0, time.Time{}, err
 	}

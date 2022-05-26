@@ -75,11 +75,21 @@ func (i *Implementation) Today(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var response struct {
-		Models []event.Event `json:"models"`
+		Models []event.Event `json:"events"`
 	}
 
 	for i := 0; i < len(res); i++ {
 		response.Models = append(response.Models, *res[i])
+	}
+
+	resJson, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	_, err = w.Write(resJson)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 

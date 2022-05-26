@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
 )
 
 const (
@@ -37,9 +36,7 @@ func main() {
 					fmt.Println(err)
 				}
 
-				answer := strings.ToUpper(string(input))
-
-				num, err = sigConn.Write([]byte(answer))
+				num, err = sigConn.Write(input)
 				if err != nil || num == 0 {
 					fmt.Println(err)
 				}
