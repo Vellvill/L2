@@ -1,4 +1,4 @@
-package logaram
+package logging
 
 import (
 	"encoding/json"

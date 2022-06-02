@@ -8,14 +8,6 @@ import (
 	"log"
 )
 
-var (
-	port string
-)
-
-func init() {
-	flag.StringVar(&port, "port", ":8080", "use for setting port, by default its :8080")
-}
-
 func main() {
 	flag.Parse()
 
@@ -31,4 +23,8 @@ func main() {
 	if err = app.Start(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func catchSig() {
+
 }

@@ -2,17 +2,19 @@ package server
 
 import (
 	cfg "dev11/internal/config"
-	logaram "dev11/internal/logger "
+	logaram "dev11/internal/logging"
 	"dev11/internal/usercases"
+	"fmt"
 	"net"
 	"net/http"
 )
 
 const (
-	loggingPath = "./logs/logs.json"
+	loggingPath = "./internal/logging/logs/logs.json"
 )
 
 type Application struct {
+	mux    *http.ServeMux
 	hash   usercases.Repository
 	config *cfg.Cfg
 	logger logaram.LoggerEx
@@ -34,19 +36,12 @@ func (a *Application) Start() error {
 
 	a.logger, err = logaram.NewLogger(loggingPath)
 
-	impl := New(a.hash, a.logger)
+	a.mux = NewServ(a.hash, a.logger)
 
-	http.HandleFunc("/create", impl.Middleware(impl.Create, a.logger))
+	err = a.logger.WriteInfo(fmt.Sprintf("Starting server on %s:%s", a.config.Ip, a.config.Port))
+	if err != nil {
+		return err
+	}
 
-	http.HandleFunc("/delete", impl.Middleware(impl.Delete, a.logger))
-
-	http.HandleFunc("/update", impl.Middleware(impl.Update, a.logger))
-
-	http.HandleFunc("/today", impl.Middleware(impl.Today, a.logger))
-
-	defer func() {
-		<-a.logger.SaveWriting()
-	}()
-
-	return http.Serve(listener, nil)
+	return http.Serve(listener, a.mux)
 }

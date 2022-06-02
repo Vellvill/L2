@@ -1,7 +1,7 @@
 package server
 
 import (
-	log "dev11/internal/logger "
+	log "dev11/internal/logging"
 	event "dev11/internal/model"
 	"dev11/internal/usercases"
 	"dev11/internal/validation"
@@ -18,6 +18,22 @@ type Implementation struct {
 
 func New(repo usercases.Repository, logger log.LoggerEx) Implementation {
 	return Implementation{repo: repo, logger: logger}
+}
+
+func NewServ(repo usercases.Repository, logger log.LoggerEx) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	impl := New(repo, logger)
+
+	mux.HandleFunc("/create", impl.Middleware(impl.Create, logger))
+
+	mux.HandleFunc("/delete", impl.Middleware(impl.Delete, logger))
+
+	mux.HandleFunc("/update", impl.Middleware(impl.Update, logger))
+
+	mux.HandleFunc("/today", impl.Middleware(impl.Today, logger))
+
+	return mux
 }
 
 func (i *Implementation) Create(w http.ResponseWriter, r *http.Request) {
