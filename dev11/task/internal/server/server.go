@@ -1,32 +1,52 @@
 package server
 
 import (
+	cfg "dev11/internal/config"
+	logaram "dev11/internal/logger "
 	"dev11/internal/usercases"
 	"net"
 	"net/http"
 )
 
+const (
+	loggingPath = "./logs/logs.json"
+)
+
 type Application struct {
-	hash     usercases.Repository
-	handlers http.Handler
+	hash   usercases.Repository
+	config *cfg.Cfg
+	logger logaram.LoggerEx
 }
 
-func Start(port string, repo usercases.Repository) error {
+func NewApp(config *cfg.Cfg, repo usercases.Repository) *Application {
+	return &Application{
+		hash:   repo,
+		config: config,
+	}
+}
 
-	listener, err := net.Listen("tcp", port)
+func (a *Application) Start() error {
+
+	listener, err := net.Listen("tcp", net.JoinHostPort(a.config.Ip, a.config.Port))
 	if err != nil {
 		return err
 	}
 
-	impl := New(repo)
+	a.logger, err = logaram.NewLogger(loggingPath)
 
-	http.HandleFunc("/create", impl.Middleware(impl.Create))
+	impl := New(a.hash, a.logger)
 
-	http.HandleFunc("/delete", impl.Middleware(impl.Delete))
+	http.HandleFunc("/create", impl.Middleware(impl.Create, a.logger))
 
-	http.HandleFunc("/update", impl.Middleware(impl.Update))
+	http.HandleFunc("/delete", impl.Middleware(impl.Delete, a.logger))
 
-	http.HandleFunc("/today", impl.Middleware(impl.Today))
+	http.HandleFunc("/update", impl.Middleware(impl.Update, a.logger))
+
+	http.HandleFunc("/today", impl.Middleware(impl.Today, a.logger))
+
+	defer func() {
+		<-a.logger.SaveWriting()
+	}()
 
 	return http.Serve(listener, nil)
 }

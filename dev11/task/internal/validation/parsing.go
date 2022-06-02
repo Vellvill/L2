@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+const (
+	br          = "bad request"
+	timeExample = "2006-01-02T15:04:05"
+)
+
 func ParseParams(r *http.Request) (int, time.Time, error) {
 	id, ok := r.URL.Query()["id"]
 	if ok {
@@ -21,7 +26,7 @@ func ParseParams(r *http.Request) (int, time.Time, error) {
 			return idRes, time.Time{}, nil
 		}
 	}
-	return 0, time.Time{}, fmt.Errorf("bad request")
+	return 0, time.Time{}, fmt.Errorf(br)
 }
 
 func validateParams(id string, date string) (int, time.Time, error) {
@@ -35,10 +40,17 @@ func validateParams(id string, date string) (int, time.Time, error) {
 		return 0, time.Time{}, err
 	}
 
-	data, err = time.Parse("2006-01-02T15:04:05", date)
+	data, err = time.Parse(timeExample, date)
 	if err != nil {
 		return 0, time.Time{}, err
 	}
 
 	return idd, data, nil
+}
+
+func ValidateID(id int) bool {
+	if id <= 0 {
+		return false
+	}
+	return true
 }

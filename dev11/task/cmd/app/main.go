@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dev11/internal/config"
 	"dev11/internal/hash"
 	"dev11/internal/server"
 	"flag"
@@ -18,13 +19,16 @@ func init() {
 func main() {
 	flag.Parse()
 
+	conf := config.NewConfig()
+
 	hash, err := hash.NewHash()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = server.Start(port, hash)
-	if err != nil {
+	app := server.NewApp(conf, hash)
+
+	if err = app.Start(); err != nil {
 		log.Fatal(err)
 	}
 }

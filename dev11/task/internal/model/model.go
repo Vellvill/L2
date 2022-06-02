@@ -10,8 +10,8 @@ type Event struct {
 	Date time.Time `json:"date"`
 }
 
-func NewEvent(id int64, time time.Time) (*Event, error) {
-	e := &Event{
+func NewEvent(id int64, time time.Time) (Event, error) {
+	e := Event{
 		ID:   id,
 		Date: time,
 	}
@@ -20,9 +20,8 @@ func NewEvent(id int64, time time.Time) (*Event, error) {
 }
 
 func (e *Event) validate() error {
-	if e.Date.Before(time.Now()) {
-		return fmt.Errorf("Creating date before now\n")
-	} else {
-		return nil
+	if e.Date.Before(time.Now()) || e.ID <= 0 {
+		return fmt.Errorf("Bad request\n")
 	}
+	return nil
 }
