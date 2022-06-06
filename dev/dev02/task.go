@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"unicode"
 )
 
 type myError struct {
@@ -39,7 +40,7 @@ func Unpack(array string) (string, error) {
 
 	if array == "" {
 		return array, nil
-	} else if _, err := strconv.Atoi(string(array[0])); err == nil {
+	} else if unicode.IsDigit(rune(array[0])) {
 		return "", myError{custom: "неверная строка на входе"}
 	}
 

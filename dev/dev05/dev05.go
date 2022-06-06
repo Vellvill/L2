@@ -32,13 +32,13 @@ type myFlags struct {
 var MyFlags myFlags
 
 func init() {
-	flag.IntVar(&MyFlags.A, "A", 0, "'after' печатать +N строк после совпадения")
-	flag.IntVar(&MyFlags.B, "B", 0, "'before' печатать +N строк до совпадения")
-	flag.IntVar(&MyFlags.C, "C", 0, "'context' печатать ±N строк вокруг совпадения")
-	flag.BoolVar(&MyFlags.c, "c", false, "'count' (количество строк)")
-	flag.BoolVar(&MyFlags.n, "n", false, "line num, напечатать номер строки")
-	flag.BoolVar(&MyFlags.i, "i", false, "игнорировать регистр")
-	flag.BoolVar(&MyFlags.v, "v", false, "вместо совпадения, исключать")
+	flag.IntVar(&MyFlags.A, "After", 0, "'after' печатать +N строк после совпадения")
+	flag.IntVar(&MyFlags.B, "Before", 0, "'before' печатать +N строк до совпадения")
+	flag.IntVar(&MyFlags.C, "Context", 0, "'context' печатать ±N строк вокруг совпадения")
+	flag.BoolVar(&MyFlags.c, "count", false, "'count' (количество строк)")
+	flag.BoolVar(&MyFlags.n, "num", false, "line num, напечатать номер строки")
+	flag.BoolVar(&MyFlags.i, "ignore", false, "игнорировать регистр")
+	flag.BoolVar(&MyFlags.v, "ver", false, "вместо совпадения, исключать")
 	flag.BoolVar(&MyFlags.F, "F", false, "точное совпадение со строкой, не паттерн")
 }
 

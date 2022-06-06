@@ -30,27 +30,41 @@ func ParseParams(r *http.Request) (int, time.Time, error) {
 }
 
 func validateParams(id string, date string) (int, time.Time, error) {
-	var (
-		idd  int
-		data time.Time
-	)
 
-	idd, err := strconv.Atoi(id)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		return 0, time.Time{}, err
 	}
 
-	data, err = time.Parse(timeExample, date)
+	err = ValidateID(idInt)
 	if err != nil {
 		return 0, time.Time{}, err
 	}
 
-	return idd, data, nil
+	data, err := ValidateTime(date)
+	if err != nil {
+		return 0, time.Time{}, err
+	}
+
+	return idInt, data, nil
 }
 
-func ValidateID(id int) bool {
+func ValidateID(id int) error {
 	if id <= 0 {
-		return false
+		return fmt.Errorf("id should be 0 < id < 2 ^ 63")
 	}
-	return true
+	return nil
+}
+
+func ValidateTime(t string) (time.Time, error) {
+	data, err := time.Parse(timeExample, t)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	if data.Before(time.Now()) {
+		return time.Time{}, fmt.Errorf("time before now")
+	}
+
+	return data, nil
 }

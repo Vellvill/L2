@@ -53,42 +53,52 @@ func (h *Hash) Create(id int64, date time.Time) (model.Event, error) {
 	}, fmt.Errorf("didn't find any users with id: %d\n", id)
 }
 
-func (h *Hash) Update(id int64, date time.Time, newTime time.Time) (*model.Event, error) {
+func (h *Hash) Update(id int64, date time.Time, newTime time.Time) error {
+	indexesForUpdate := make([]int, 0)
 	h.RLock()
-
-	for _, v := range h.hash[id] {
+	insecure := h.hash[id]
+	h.RUnlock()
+	for i, v := range insecure {
 		if v.Date == date {
-			v.Date = newTime
+			indexesForUpdate = append(indexesForUpdate, i)
 		}
 	}
+	if len(indexesForUpdate) == 0 {
+		return fmt.Errorf("didnt'")
+	}
 
-	h.RUnlock()
-	return nil, fmt.Errorf("didn't find any events with %d ID\n", id)
+	h.update(indexesForUpdate, id, newTime)
+
+	return nil
 }
 
 func (h *Hash) Delete(id int64, date time.Time) error {
 	indexesForDel := make([]int, 0)
-	for i, v := range h.hash[id] {
+	h.RLock()
+	insecure := h.hash[id]
+	h.RUnlock()
+	for i, v := range insecure {
 		if v.Date == date {
 			indexesForDel = append(indexesForDel, i)
 		}
 	}
-
-	fmt.Errorf("df").Error()
+	if len(indexesForDel) == 0 {
+		return fmt.Errorf("no events with %v date", date)
+	}
 
 	h.delete(indexesForDel, id)
 
-	return fmt.Errorf("No events for %v, for %v\n", id, date)
+	return nil
 }
 
 func (h *Hash) Today(id int64) ([]byte, error) {
-	return checkTime("today", h.hash[id])
+	return checkTimeDay(h.hash[id])
 }
 
 func (h *Hash) Week(id int64) ([]byte, error) {
-	return checkTime("week", h.hash[id])
+	return checkTimeWeek(h.hash[id])
 }
 
 func (h *Hash) Month(id int64) ([]byte, error) {
-	return checkTime("month", h.hash[id])
+	return checkTimeMonth(h.hash[id])
 }
