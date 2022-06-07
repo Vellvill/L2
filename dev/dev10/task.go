@@ -14,7 +14,7 @@ go-telnet --timeout=10s host port go-telnet mysite.ru 8080 go-telnet --timeout=3
 package main
 
 import (
-	"L2/dev10/telnet"
+	"L2/dev/dev10/telnet"
 	"flag"
 	"log"
 )
@@ -42,7 +42,7 @@ func newTelnet(client telnet.Telnet) *Telnet {
 
 func main() {
 	flag.Parse()
-	host, port = "localhost", "8080"
+	host, port = "localhost", "3000"
 	myTelnetClient := telnet.NewTelnetClient(host, port, timeout)
 	a := newTelnet(myTelnetClient)
 	err := a.client.Connect()

@@ -1,17 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net"
+	"time"
 )
 
 const (
-	port = ":8080"
+	port = "3000"
+	host = "localhost"
 )
 
 func main() {
-	srv, err := net.Listen("tcp", port)
+	srv, err := net.Listen("tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,17 +32,13 @@ func main() {
 		}
 		go func(sigConn net.Conn) {
 			for {
-				input := make([]byte, 0)
-
-				num, err := sigConn.Read(input)
-				if err != nil || num == 0 {
+				data, err := bufio.NewReader(sigConn).ReadString('\n')
+				if err != nil {
 					fmt.Println(err)
 				}
 
-				num, err = sigConn.Write(input)
-				if err != nil || num == 0 {
-					fmt.Println(err)
-				}
+				_, err = sigConn.Write([]byte(fmt.Sprintf("%s year now: %s", data, time.Now().Format("2006"))))
+
 			}
 		}(sigConn)
 	}

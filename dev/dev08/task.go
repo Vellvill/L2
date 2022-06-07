@@ -16,6 +16,7 @@ func main() {
 		if err != nil {
 			fmt.Printf("%v, %v\n", os.Stderr, err)
 		}
+		input = strings.TrimSuffix(input, "\n")
 		err = execIn(input)
 		if err != nil {
 			fmt.Println(err)
@@ -24,7 +25,6 @@ func main() {
 }
 
 func execIn(input string) error {
-	input = strings.TrimSuffix(input, "\r\n")
 
 	args := strings.Split(input, " ")
 

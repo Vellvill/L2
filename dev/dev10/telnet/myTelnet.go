@@ -69,9 +69,9 @@ func (t *TelnetClient) goClientWriter() (err error) {
 						errChan <- err
 					}
 
-					buffer := make([]byte, 0)
+					out := []byte{}
 
-					data, err := t.conn.Read(buffer)
+					data, err := t.conn.Read(out)
 					if err != nil {
 						errChan <- err
 					}
